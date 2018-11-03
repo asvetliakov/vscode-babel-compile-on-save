@@ -4,7 +4,7 @@
 
 * Automatically transpile file by babel on save
 * Experimental: Fast-emitting TS declaration for saved file (250-400ms to produce declaration)
-* Use either project's @babel/core or typescript (for declaration emit) or bundled ones (if not found)
+* Use either project's @babel/core / typescript (for declaration emit) or bundled ones (if not found)
 
 ## Requirements
 

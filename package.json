@@ -4,6 +4,11 @@
     "description": "Compile files with babel when saving file",
     "version": "1.0.0",
     "publisher": "asvetliakov",
+    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/asvetliakov/vscode-babel-compile-on-save"
+    },
     "engines": {
         "vscode": "^1.28.0"
     },
