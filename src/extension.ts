@@ -24,7 +24,7 @@ const parseConfigHost: import("typescript").ParseConfigFileHost = {
  * Compile TS declaration. Creates program only with single sourcefile and tries to get the declaration for it
  * @param filePath File path
  */
-async function compileTypescript(filePath: string): Promise<void> {
+async function compileTypescript(filePath: string, emitMap = true): Promise<void> {
     if (!filePath.endsWith(".ts") && !filePath.endsWith(".tsx")) {
         return;
     }
@@ -48,7 +48,9 @@ async function compileTypescript(filePath: string): Promise<void> {
         configPath,
         {
             declaration: true,
+            declarationMap: emitMap,
             emitDeclarationOnly: true,
+            isolatedModules: false,
             composite: false,
             skipLibCheck: true,
             noEmitHelpers: true,
@@ -141,6 +143,7 @@ async function saveListener(e: vscode.TextDocument, output: vscode.OutputChannel
     const srcDir: string = config.get("srcDir", "");
     const outExt: string = config.get("outExt", ".js");
     const emitTSDeclaration = config.get("emitTSDeclaration", false);
+    const emitTSDeclarationMap = config.get("emitTSDeclarationMap", true);
     // const outFilePath = path.resolve(workspacePath, outDir, vscode.workspace.asRelativePath(fileName, false));
     const outFilePath = path.resolve(workspacePath, outDir, path.relative(path.join(workspacePath, srcDir), fileName));
     const outFilePathJs = path.join(path.dirname(outFilePath), path.basename(outFilePath, path.extname(outFilePath)) + outExt);
@@ -157,7 +160,7 @@ async function saveListener(e: vscode.TextDocument, output: vscode.OutputChannel
     if (emitTSDeclaration) {
         try {
             const tsTime = new Date().getTime();
-            compileTypescript(fileName);
+            await compileTypescript(fileName, emitTSDeclarationMap);
             output.appendLine(`TS compilation took: ${new Date().getTime() - tsTime}ms`);
         } catch (e) {
             output.appendLine(`Unable to produce TS declaration: ${e.message}`);
