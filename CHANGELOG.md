@@ -1,3 +1,6 @@
+## [1.0.3]
+- Don't throw error if babel returned empty transpiled code (valid case for TS/Flow file with types only)
+
 ## [1.0.2]
 - Add option to force emitting declarationMap (may be helpful with some tsconfig.json scenarios)
 

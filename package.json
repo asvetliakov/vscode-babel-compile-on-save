@@ -2,7 +2,7 @@
     "name": "babel-compile-on-save",
     "displayName": "Babel Compile On Save",
     "description": "Transpile file with babel on file save",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "publisher": "asvetliakov",
     "icon": "icon.png",
     "repository": {
