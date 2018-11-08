@@ -58,7 +58,8 @@ async function compileTypescript(filePath: string, emitMap = true): Promise<void
             module: ts.ModuleKind.ESNext,
             noEmit: false,
             // 2-2.5x emitting faster 250-300ms vs 600-700ms
-            noResolve: true,
+            // unfortunately declaration could be wrong without it
+            // noResolve: true,
             // skip any errors since with noResolve it will be a bunch of them
             noEmitOnError: false,
         },
