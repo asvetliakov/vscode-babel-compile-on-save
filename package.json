@@ -2,7 +2,7 @@
     "name": "babel-compile-on-save",
     "displayName": "Babel Compile On Save",
     "description": "Transpile file with babel on file save",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "publisher": "asvetliakov",
     "icon": "icon.png",
     "repository": {
@@ -89,6 +89,8 @@
         "@babel/core": "^7.1.2",
         "make-dir": "^1.3.0",
         "micromatch": "^3.1.10",
-        "typescript": "^3.1.6"
+        "typescript": "^3.1.6",
+        "vscode-languageclient": "^5.1.1",
+        "vscode-languageserver": "^5.1.0"
     }
 }

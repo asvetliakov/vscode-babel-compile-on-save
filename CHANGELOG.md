@@ -1,3 +1,6 @@
+## [1.0.5]
+- Run transpilation in separate process
+
 ## [1.0.3]
 - Don't throw error if babel returned empty transpiled code (valid case for TS/Flow file with types only)
 
