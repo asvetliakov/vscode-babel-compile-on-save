@@ -1,10 +1,24 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 import micromatch from "micromatch";
 import path from "path";
-import { CompileMessage } from './compile_process';
+import fs from "fs";
+import { CompileMessage } from "./compile_process";
 import { LanguageClient, ServerOptions, TransportKind } from "vscode-languageclient";
 
-async function saveListener(e: vscode.TextDocument, output: vscode.OutputChannel, client: LanguageClient): Promise<void> {
+function findPackageJson(sourceDir: string, workspacePath: string): string {
+    const root = path.parse(sourceDir).root;
+    let step = sourceDir;
+    while (!fs.existsSync(path.join(step, "package.json")) && step !== workspacePath && step !== root) {
+        step = path.resolve(step, "../");
+    }
+    return step;
+}
+
+async function saveListener(
+    e: vscode.TextDocument,
+    output: vscode.OutputChannel,
+    client: LanguageClient,
+): Promise<void> {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(e.uri);
     if (!workspaceFolder || workspaceFolder.uri.scheme !== "file") {
         return;
@@ -15,7 +29,7 @@ async function saveListener(e: vscode.TextDocument, output: vscode.OutputChannel
     if (!config || !fileName) {
         return;
     }
-    const includeGlobs: string[] = config.get("include", []).map(g => `${workspacePath}/${g}`);
+    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath}/${g}`);
     // micromatch supports glob array, bad typings
     if (!micromatch.isMatch(fileName, includeGlobs as any)) {
         return;
@@ -24,14 +38,18 @@ async function saveListener(e: vscode.TextDocument, output: vscode.OutputChannel
     if (fileName.endsWith(".d.ts")) {
         return;
     }
+    const projectPath = findPackageJson(path.dirname(fileName), workspacePath);
     const outDir: string = config.get("outDir", "");
     const srcDir: string = config.get("srcDir", "");
     const outExt: string = config.get("outExt", ".js");
     const emitTSDeclaration = config.get("emitTSDeclaration", false);
     const emitTSDeclarationMap = config.get("emitTSDeclarationMap", true);
     // const outFilePath = path.resolve(workspacePath, outDir, vscode.workspace.asRelativePath(fileName, false));
-    const outFilePath = path.resolve(workspacePath, outDir, path.relative(path.join(workspacePath, srcDir), fileName));
-    const outFilePathJs = path.join(path.dirname(outFilePath), path.basename(outFilePath, path.extname(outFilePath)) + outExt);
+    const outFilePath = path.resolve(projectPath, outDir, path.relative(path.join(projectPath, srcDir), fileName));
+    const outFilePathJs = path.join(
+        path.dirname(outFilePath),
+        path.basename(outFilePath, path.extname(outFilePath)) + outExt,
+    );
     output.appendLine(`Compiling file: ${fileName}, output file: ${outFilePathJs}`);
 
     const message: CompileMessage = {
@@ -58,10 +76,10 @@ export function activate(context: vscode.ExtensionContext) {
             { scheme: "file", language: "typescript" },
             { scheme: "file", language: "javascriptreact" },
             { scheme: "file", language: "typescriptreact" },
-        ]
+        ],
     });
     const clientDisp = client.start();
-    const disposable = vscode.workspace.onDidSaveTextDocument(e => saveListener(e, channel, client));
+    const disposable = vscode.workspace.onDidSaveTextDocument((e) => saveListener(e, channel, client));
     context.subscriptions.push(disposable, channel, clientDisp);
 }
 

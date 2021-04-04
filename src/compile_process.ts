@@ -1,5 +1,10 @@
 import {
-    IConnection, createConnection, IPCMessageReader, IPCMessageWriter, InitializedParams, TextDocumentSyncKind,
+    IConnection,
+    createConnection,
+    IPCMessageReader,
+    IPCMessageWriter,
+    InitializedParams,
+    TextDocumentSyncKind,
 } from "vscode-languageserver";
 import path from "path";
 import makeDir from "make-dir";
@@ -20,15 +25,14 @@ const promisedWriteFile = promisify(fs.writeFile);
 const parseConfigHost: import("typescript").ParseConfigFileHost = {
     fileExists: fs.existsSync,
     getCurrentDirectory: () => __dirname,
-    readFile: path => fs.readFileSync(path, { encoding: "utf8" }),
-    onUnRecoverableConfigFileDiagnostic: diag => {
+    readFile: (path) => fs.readFileSync(path, { encoding: "utf8" }),
+    onUnRecoverableConfigFileDiagnostic: (diag) => {
         throw new Error("Error when parsing TS config file: " + diag.messageText.toString());
     },
     // we don't need any directory reading
     readDirectory: () => [],
     useCaseSensitiveFileNames: true,
 };
-
 
 /**
  * Compile TS declaration. Creates program only with single sourcefile and tries to get the declaration for it
@@ -41,10 +45,7 @@ async function compileTypescript(filePath: string, emitMap = true): Promise<void
     let tsPath: string;
     try {
         tsPath = require.resolve("typescript", {
-            paths: [
-                path.dirname(filePath),
-                __dirname,
-            ],
+            paths: [path.dirname(filePath), __dirname],
         });
     } catch {
         throw new Error("Unable to instantiate typescript");
@@ -98,10 +99,7 @@ async function compileBabel(filePath: string, outputPath: string): Promise<void>
     let babelPath: string;
     try {
         babelPath = require.resolve("@babel/core", {
-            paths: [
-                path.dirname(filePath),
-                __dirname,
-            ]
+            paths: [path.dirname(filePath), __dirname],
         });
     } catch {
         throw new Error("Unable to instantiate @babel/core");
@@ -128,7 +126,11 @@ async function compileBabel(filePath: string, outputPath: string): Promise<void>
     }
     await Promise.all([
         promisedWriteFile(outputPath, code, { encoding: "utf8" }),
-        map ? promisedWriteFile(outputMapPath, JSON.stringify(map), { encoding: "utf8" }) : Promise.resolve(),
+        map
+            ? promisedWriteFile(outputMapPath, JSON.stringify(map), {
+                  encoding: "utf8",
+              })
+            : Promise.resolve(),
     ]);
 }
 
@@ -136,7 +138,7 @@ connection.onInitialize((params: InitializedParams) => {
     return {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.None,
-        }
+        },
     };
 });
 
