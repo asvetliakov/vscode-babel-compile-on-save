@@ -3,7 +3,7 @@ import micromatch from "micromatch";
 import path from "path";
 import fs from "fs";
 import { CompileMessage } from "./compile_process";
-import { LanguageClient, ServerOptions, TransportKind } from "vscode-languageclient";
+import { LanguageClient, ServerOptions, TransportKind } from "vscode-languageclient/node";
 
 function findPackageJson(sourceDir: string, workspacePath: string): string {
     const root = path.parse(sourceDir).root;
@@ -29,7 +29,7 @@ async function saveListener(
     if (!config || !fileName) {
         return;
     }
-    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath}/${g}`);
+    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath.replace(/\\/gi,"/") }/${ g}`);
     // micromatch supports glob array, bad typings
     if (!micromatch.isMatch(fileName, includeGlobs as any)) {
         return;
