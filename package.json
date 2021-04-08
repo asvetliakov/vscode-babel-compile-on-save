@@ -87,9 +87,9 @@
     "dependencies": {
         "@babel/core": "^7.13.14",
         "make-dir": "^3.1.0",
-        "micromatch": "^4.0.2",
+        "micromatch": "^4.0.1",
         "typescript": "^4.2.3",
-        "vscode-languageclient": "5",
-        "vscode-languageserver": "5"
+        "vscode-languageclient": "^7.0.0",
+        "vscode-languageserver": "^7.0.0"
     }
 }

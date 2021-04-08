@@ -1,17 +1,17 @@
 import {
-    IConnection,
+    Connection,
     createConnection,
     IPCMessageReader,
     IPCMessageWriter,
     InitializedParams,
     TextDocumentSyncKind,
-} from "vscode-languageserver";
+} from "vscode-languageserver/node";
 import path from "path";
 import makeDir from "make-dir";
 import fs from "fs";
 import { promisify } from "util";
 
-const connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
+const connection: Connection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
 
 export interface CompileMessage {
     fileName: string;
