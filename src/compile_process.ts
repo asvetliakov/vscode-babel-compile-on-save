@@ -112,14 +112,14 @@ async function compileBabel(filePath: string, outputPath: string): Promise<void>
     } as any);
     // babel may return empty file and it's valid case, for example TS file with only declared types
     if (!res) {
-        throw new Error(`Got empty result when transipling the file: ${filePath}`);
+        throw new Error(`Got empty result when transpiling the file: ${filePath}`);
     }
     const outputMapPath = outputPath + ".map";
     let code = res.code || "";
     const map = res.map;
     // make sure that output directory exists
     await makeDir(path.dirname(outputPath));
-    // add sourcemapping url if there is no sourcemap in the code
+    // add source mapping url if there is no sourcemap in the code
     const hasSourceMapping = SOURCEMAP_REGEX.test(code || "");
     if (!hasSourceMapping && map) {
         code += `\n//# sourceMappingURL=${path.basename(outputMapPath)}`;
