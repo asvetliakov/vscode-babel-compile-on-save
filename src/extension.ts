@@ -78,9 +78,9 @@ export function activate(context: vscode.ExtensionContext) {
             { scheme: "file", language: "typescriptreact" },
         ],
     });
-    const clientDisp = client.start();
+    client.start();
     const disposable = vscode.workspace.onDidSaveTextDocument((e) => saveListener(e, channel, client));
-    context.subscriptions.push(disposable, channel, clientDisp);
+    context.subscriptions.push(disposable, channel);
 }
 
 // this method is called when your extension is deactivated

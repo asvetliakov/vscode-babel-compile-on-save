@@ -152,7 +152,7 @@ connection.onRequest("babelCompileOnSave", async (param: CompileMessage) => {
         await compileBabel(fileName, outFileName);
         connection.console.log(`Babel compilation took: ${new Date().getTime() - babelTime}ms`);
     } catch (e) {
-        connection.console.log(`Unable to transpile file: ${e.message}`);
+        connection.console.log(`Unable to transpile file: ${e}`);
         return;
     }
     if (compileTS) {
@@ -161,7 +161,7 @@ connection.onRequest("babelCompileOnSave", async (param: CompileMessage) => {
             await compileTypescript(fileName, emitTSDeclarationMap);
             connection.console.log(`TS compilation took: ${new Date().getTime() - tsTime}ms`);
         } catch (e) {
-            connection.console.log(`Unable to produce TS declaration: ${e.message}`);
+            connection.console.log(`Unable to produce TS declaration: ${e}`);
         }
     }
 });
