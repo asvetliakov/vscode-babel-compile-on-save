@@ -2,7 +2,7 @@
     "name": "babel-compile-on-save-plus",
     "displayName": "Babel Compile On Save plus",
     "description": "Transpile file with babel on file save(fix bug: can't match file correctly in Windows OS)",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "publisher": "jimbo",
     "icon": "icon.png",
     "repository": {

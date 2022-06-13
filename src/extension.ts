@@ -29,13 +29,15 @@ async function saveListener(
     if (!config || !fileName) {
         return;
     }
-    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath.replace(/\\/gi,"/") }/${ g}`);
+    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath.replace(/\\/g, "/")}/${g}`);
     // micromatch supports glob array, bad typings
-    if (!micromatch.isMatch(fileName, includeGlobs as any)) {
+    if (!micromatch.isMatch(fileName.replace(/\\/g, "/"), includeGlobs)) {
+        output.appendLine(`File name isn't matched. File:${fileName}, config of 'include':${includeGlobs.join(";")}`);
         return;
     }
     // always skip d.ts files
     if (fileName.endsWith(".d.ts")) {
+        output.appendLine(`can't babel .d.ts file. File:${fileName}`);
         return;
     }
     const projectPath = findPackageJson(path.dirname(fileName), workspacePath);
