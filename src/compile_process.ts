@@ -1,17 +1,17 @@
 import {
-    IConnection,
+    Connection,
     createConnection,
     IPCMessageReader,
     IPCMessageWriter,
     InitializedParams,
     TextDocumentSyncKind,
-} from "vscode-languageserver";
+} from "vscode-languageserver/node";
 import path from "path";
 import makeDir from "make-dir";
 import fs from "fs";
 import { promisify } from "util";
 
-const connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
+const connection: Connection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
 
 export interface CompileMessage {
     fileName: string;
@@ -112,14 +112,14 @@ async function compileBabel(filePath: string, outputPath: string): Promise<void>
     } as any);
     // babel may return empty file and it's valid case, for example TS file with only declared types
     if (!res) {
-        throw new Error(`Got empty result when transipling the file: ${filePath}`);
+        throw new Error(`Got empty result when transpiling the file: ${filePath}`);
     }
     const outputMapPath = outputPath + ".map";
     let code = res.code || "";
     const map = res.map;
     // make sure that output directory exists
     await makeDir(path.dirname(outputPath));
-    // add sourcemapping url if there is no sourcemap in the code
+    // add source mapping url if there is no sourcemap in the code
     const hasSourceMapping = SOURCEMAP_REGEX.test(code || "");
     if (!hasSourceMapping && map) {
         code += `\n//# sourceMappingURL=${path.basename(outputMapPath)}`;
@@ -152,7 +152,7 @@ connection.onRequest("babelCompileOnSave", async (param: CompileMessage) => {
         await compileBabel(fileName, outFileName);
         connection.console.log(`Babel compilation took: ${new Date().getTime() - babelTime}ms`);
     } catch (e) {
-        connection.console.log(`Unable to transpile file: ${e.message}`);
+        connection.console.log(`Unable to transpile file: ${e}`);
         return;
     }
     if (compileTS) {
@@ -161,7 +161,7 @@ connection.onRequest("babelCompileOnSave", async (param: CompileMessage) => {
             await compileTypescript(fileName, emitTSDeclarationMap);
             connection.console.log(`TS compilation took: ${new Date().getTime() - tsTime}ms`);
         } catch (e) {
-            connection.console.log(`Unable to produce TS declaration: ${e.message}`);
+            connection.console.log(`Unable to produce TS declaration: ${e}`);
         }
     }
 });

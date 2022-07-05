@@ -3,7 +3,7 @@ import micromatch from "micromatch";
 import path from "path";
 import fs from "fs";
 import { CompileMessage } from "./compile_process";
-import { LanguageClient, ServerOptions, TransportKind } from "vscode-languageclient";
+import { LanguageClient, ServerOptions, TransportKind } from "vscode-languageclient/node";
 
 function findPackageJson(sourceDir: string, workspacePath: string): string {
     const root = path.parse(sourceDir).root;
@@ -29,13 +29,15 @@ async function saveListener(
     if (!config || !fileName) {
         return;
     }
-    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath}/${g}`);
+    const includeGlobs: string[] = config.get("include", []).map((g) => `${workspacePath.replace(/\\/g, "/")}/${g}`);
     // micromatch supports glob array, bad typings
-    if (!micromatch.isMatch(fileName, includeGlobs as any)) {
+    if (!micromatch.isMatch(fileName.replace(/\\/g, "/"), includeGlobs)) {
+        output.appendLine(`File name isn't matched. File:${fileName}, config of 'include':${includeGlobs.join(";")}`);
         return;
     }
     // always skip d.ts files
     if (fileName.endsWith(".d.ts")) {
+        output.appendLine(`can't babel .d.ts file. File:${fileName}`);
         return;
     }
     const projectPath = findPackageJson(path.dirname(fileName), workspacePath);
@@ -78,9 +80,9 @@ export function activate(context: vscode.ExtensionContext) {
             { scheme: "file", language: "typescriptreact" },
         ],
     });
-    const clientDisp = client.start();
+    client.start();
     const disposable = vscode.workspace.onDidSaveTextDocument((e) => saveListener(e, channel, client));
-    context.subscriptions.push(disposable, channel, clientDisp);
+    context.subscriptions.push(disposable, channel);
 }
 
 // this method is called when your extension is deactivated
